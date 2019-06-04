@@ -22,25 +22,35 @@ jobs:
   pool:
     vmImage: 'Ubuntu 16.04'
   variables:
-    JHI_JDK: 11
+    JHI_PROFILE: prod
+    JHI_RUN_APP: 1
+    JHI_PROTRACTOR: 1
+    JHI_ENTITY: sql
+    JHI_JDK: '11'
+    # if JHI_LIB_BRANCH value is release, use the release from Maven
+    JHI_LIB_REPO: https://github.com/jhipster/jhipster.git
+    JHI_LIB_BRANCH: master
+    # if JHI_GEN_BRANCH value is release, use the release from NPM
+    JHI_GEN_REPO: https://github.com/jhipster/generator-jhipster.git
+    JHI_GEN_BRANCH: master
+    # specific config
+    SPRING_OUTPUT_ANSI_ENABLED: NEVER
+    SPRING_JPA_SHOW_SQL: false
+    JHI_DISABLE_WEBPACK_LOGS: true
+    JHI_E2E_HEADLESS: true
+    JHI_SCRIPTS: $HOME/generator-jhipster/test-integration/scripts
+
+  strategy:
+    matrix:
+      gradle-react-mongodb:
+        JHI_APP: gradle-react-mongodb
+        JHI_ENTITY: mongodb
+      gradle-react-cassandra:
+        JHI_APP: gradle-react-cassandra
+        JHI_ENTITY: cassandra
+      gradle-react-couchbase:
+        JHI_APP: gradle-react-couchbase
+        JHI_ENTITY: couchbase
+
   steps:
-  - bash: echo 'Hello World!'
-    displayName: 'Hello World!'
-  - task: NodeTool@0
-    inputs:
-      versionSpec: '10.15.3'
-    displayName: 'TOOLS: install Node.js'
-  - bash: npm -v
-    displayName: 'TOOLS: display npm version'
-  - script: npm install -g npm
-    displayName: 'TOOLS: update NPM'
-  - script: ls -al /home/vsts/.npm/
-    displayName: 'display folder'
-  # - script: sudo chown -R vsts:docker /home/vsts/.npm/
-  #   displayName: 'BUGS-FIX: change /home/vsts/.npm/ permission'
-  - bash: yarn -v
-    displayName: 'Display yarn version'
-  - bash: npm install -g yarn
-    displayName: 'Update Yarn'
-  - bash: yarn -v
-    displayName: 'Display yarn version'
+  - template: azure-template.yml
